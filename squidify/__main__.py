@@ -1,3 +1,5 @@
+"""squidify.__main__: main script."""
+
 import nltk
 
 from squidify.replacer import Replacer

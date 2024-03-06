@@ -1,30 +1,64 @@
+"""squidify.replacer: Implements Replacer class for squidifying text."""
+
 import nltk
 
 FREQUENCY_OF_SQUID = 15
 
-def is_vowel(ch: str) -> str:
-    return ch.lower() in "aeiou"
-
-def is_consonant(ch: str) -> str:
-    return ch.isalpha() and not is_vowel(ch)
 
 class LanguageError(Exception):
 
     def __init__(self) -> None:
-        super().__init__("Only English (eng) and Russian (rus) are currently supported.")
+        """An exception that occurs when requesting an unsupported language."""
+        super().__init__(
+            "Only English (eng) and Russian (rus) are currently supported."
+        )
+
 
 class Replacer:
 
     def __init__(self, language: str = "eng") -> None:
+        """
+        Squidifies text.
+
+        Parameters
+        ----------
+        language: str, default="eng"
+            Input text.
+
+        Methods
+        -------
+        replace_squid(str) -> str
+        """
         if language not in ("eng", "rus"):
             raise LanguageError()
         self.language = language
 
     def replace_squid(self, text: str) -> str:
+        """
+        Replace text to squidify.
+
+        Parameters
+        ----------
+        text: str
+            Input text.
+
+        Returns
+        -------
+        str
+            Squidified text.
+
+        Notes
+        -----
+        Squidification is defined as follows:
+        - Squidification replaces the consonants at the beginning of a word with vowels.
+        - Empty words and punctuation are already squidified.
+        - Verbs and adjectives are always squidified.
+        - Other words have a non-random chance to be squidified.
+        """
         word_tokens = nltk.word_tokenize(text)
         pos_tags = nltk.pos_tag(word_tokens, tagset="universal", lang=self.language)
         sentence = ""
-        for (word, pos) in pos_tags:
+        for word, pos in pos_tags:
 
             # this should never happen
             if word == "":
@@ -45,7 +79,7 @@ class Replacer:
             first_vowel_index = 0
             is_capital = False
             for i, ch in enumerate(word):
-                if is_vowel(ch):
+                if ch.lower() in "aeiou":
                     first_vowel_index = i
                     is_capital = word[0].isupper()
                     break
